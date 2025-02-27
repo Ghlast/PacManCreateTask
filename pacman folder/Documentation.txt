@@ -1,0 +1,6 @@
+Documentation for the PAC_MAN horror version.
+we'll use py_game. it's built for games in python. here is the official docs: https://www.pygame.org/docs/
+here is an interactive debugger: https://pythontutor.com/python-compiler.html#mode=edit
+If we get stuck, pdb will also give us a step by step debugger https://www.geeksforgeeks.org/python-debugger-python-pdb/, https://www.geeksforgeeks.org/python-debugger-python-pdb/
+ also another debug tool: https://www.w3schools.com/python/python_try_except.asp a try and except method that helps us prevent and pinpoint the errors.
+ 
