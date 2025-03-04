@@ -15,12 +15,32 @@ def pacman_game():
     coll_x = False
     game_active = False
     starting = True
-    start_screen = pygame.image.load(r"H:\My Drive\10 nth grade\Computer science\git hub folder\projects and packages!\Pacman Horror\Ryan-and-Toa-Create-Task-\PacManCreateTask\pacman folder\pacman_end_screen.gif")
-    play_button = pygame.image.load(r"H:\My Drive\10 nth grade\Computer science\git hub folder\projects and packages!\Pacman Horror\Ryan-and-Toa-Create-Task-\PacManCreateTask\pacman folder\play_game.gif")
-    game_background = pygame.image.load(r"H:\My Drive\10 nth grade\Computer science\git hub folder\projects and packages!\Pacman Horror\Ryan-and-Toa-Create-Task-\PacManCreateTask\pacman folder\pac_man_background.gif")
-    pacman = pygame.image.load(r"H:\My Drive\10 nth grade\Computer science\git hub folder\projects and packages!\Pacman Horror\Ryan-and-Toa-Create-Task-\PacManCreateTask\pacman folder\pac_man.gif")
-    ghost = pygame.image.load(r"H:\My Drive\10 nth grade\Computer science\git hub folder\projects and packages!\Pacman Horror\Ryan-and-Toa-Create-Task-\PacManCreateTask\pacman folder\pacman ghost.gif")
-    death_screen = pygame.image.load(r"H:\My Drive\10 nth grade\Computer science\git hub folder\projects and packages!\Pacman Horror\Ryan-and-Toa-Create-Task-\PacManCreateTask\pacman folder\pacman_start_screen.gif")
+    try:
+        start_screen = pygame.image.load(r"H:\My Drive\10 nth grade\Computer science\git hub folder\projects and packages!\Pacman Horror\Ryan-and-Toa-Create-Task-\PacManCreateTask\pacman folder\pacman_end_screen.gif")
+    except:
+        start_screen = pygame.image.load(r"C:\Users\toasa\OneDrive\Documents\GitHub\PacManCreateTask\pacman folder\pacman_end_screen.gif")
+    try:
+        play_button = pygame.image.load(r"H:\My Drive\10 nth grade\Computer science\git hub folder\projects and packages!\Pacman Horror\Ryan-and-Toa-Create-Task-\PacManCreateTask\pacman folder\play_game.gif")
+    except FileNotFoundError:
+        play_button = pygame.image.load(r"C:\Users\toasa\OneDrive\Documents\GitHub\PacManCreateTask\pacman folder\play_game.gif")
+    try:
+        game_background = pygame.image.load(r"H:\My Drive\10 nth grade\Computer science\git hub folder\projects and packages!\Pacman Horror\Ryan-and-Toa-Create-Task-\PacManCreateTask\pacman folder\pac_man_background.gif")
+    except FileNotFoundError:
+        game_background = pygame.image.load(r"C:\Users\toasa\OneDrive\Documents\GitHub\PacManCreateTask\pacman folder\pac_man_background.gif")
+    try:
+        pacman = pygame.image.load(r"H:\My Drive\10 nth grade\Computer science\git hub folder\projects and packages!\Pacman Horror\Ryan-and-Toa-Create-Task-\PacManCreateTask\pacman folder\pac_man.gif")
+    except FileNotFoundError:
+        pacman = pygame.image.load(r"C:\Users\toasa\OneDrive\Documents\GitHub\PacManCreateTask\pacman folder\pac_man.gif")
+    try:
+        ghost = pygame.image.load(r"H:\My Drive\10 nth grade\Computer science\git hub folder\projects and packages!\Pacman Horror\Ryan-and-Toa-Create-Task-\PacManCreateTask\pacman folder\pacman ghost.gif")
+    except FileNotFoundError:
+        ghost = pygame.image.load(r"C:\Users\toasa\OneDrive\Documents\GitHub\PacManCreateTask\pacman folder\pacman ghost.gif")
+    try:
+        death_screen = pygame.image.load(r"H:\My Drive\10 nth grade\Computer science\git hub folder\projects and packages!\Pacman Horror\Ryan-and-Toa-Create-Task-\PacManCreateTask\pacman folder\pacman_start_screen.gif")
+    except FileNotFoundError:
+        death_screen = pygame.image
+    except FileNotFoundError:
+        death_screen = pygame.image.load(r"C:\Users\toasa\OneDrive\Documents\GitHub\PacManCreateTask\pacman folder\pacman_start_screen.gif")
     class pellet:
         def __init__(self,image, x , y, eaten):
             normal_x = x+300 
@@ -33,7 +53,10 @@ def pacman_game():
         def eaten_state(self):
                 self.eaten = True
         pass
-    test_pellet = pellet(pygame.image.load(r"H:\My Drive\10 nth grade\Computer science\git hub folder\projects and packages!\Pacman Horror\Ryan-and-Toa-Create-Task-\PacManCreateTask\pacman folder\pellet.gif"), 200, 300, False)
+    try:
+        test_pellet = pellet(pygame.image.load(r"H:\My Drive\10 nth grade\Computer science\git hub folder\projects and packages!\Pacman Horror\Ryan-and-Toa-Create-Task-\PacManCreateTask\pacman folder\pellet.gif"), 200, 300, False)
+    except FileNotFoundError:
+        test_pellet = pellet(pygame.image.load(r"C:\Users\toasa\OneDrive\Documents\GitHub\PacManCreateTask\pacman folder\Pellet.gif"), 200, -100, False)
 
     print(test_pellet.position)
     pac_man_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
@@ -51,6 +74,10 @@ def pacman_game():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_q]:
+                print("pressed q")
+                event.type == pygame.QUIT
             if event.type == pygame.MOUSEBUTTONDOWN:
                 x, y = event.pos
                 #star game buttton it also sets the game to active

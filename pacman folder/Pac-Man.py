@@ -8,7 +8,7 @@ import time #used to smooth out movement
 import random #used for randomization in generation
 import math #used for ghost movement 
 import pygame
-import matplotlib.image as mpimg
+
 #Screen Setup
 
 wn = pac_man.Screen()
