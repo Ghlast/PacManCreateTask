@@ -1,7 +1,20 @@
 # Example file showing a basic pygame "game loop"
-import pygame, random
+import pygame
+import random
+import threading
+import time
 # pygame setup
 pygame.init()
+
+# Create a function to monitor variables
+# Got this from AI, you can now see the status of the variables in the console as the code runs. sweet right?
+def monitor():
+    while True:
+       #print variables here to monitor them. hold the key for the input and then escape to see the results of inputs
+        time.sleep()  # Adjust the sleep time as needed
+
+# Start the monitoring thread
+threading.Thread(target=monitor, daemon=True).start()
 def pacman_game():
     # create a window
     screen = pygame.display.set_mode((747,790))
@@ -51,8 +64,12 @@ def pacman_game():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_ESCAPE]:
+                running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 x, y = event.pos
+            
                 #star game buttton it also sets the game to active
                 if x > 300 and x < 480 and y > 450 and y < 500 and starting == True:
                     print("here")
@@ -62,7 +79,6 @@ def pacman_game():
                     screen = pygame.display.set_mode((1000,1000))
                     screen.blit(game_background, (0, 0))
                     screen.blit(pacman,pac_man_pos)
-
                     pygame.display.flip()
 
         def pac_man_movement():
@@ -71,6 +87,11 @@ def pacman_game():
             left = False
             right = False
             if pac_man_pos.x >= 30 and pac_man_pos.x <= 950 and pac_man_pos.y >= 30 and pac_man_pos.y <= 750:
+                def monitor():
+                    while True:
+                        #print variables here to monitor them. hold the key for the input and then escape to see the results of inputs
+                        time.sleep(5)  # Adjust the sleep time as needed
+                threading.Thread(target=monitor, daemon=True).start()
                 keys = pygame.key.get_pressed()
                 if keys[pygame.K_w]:
                     up = True
@@ -117,6 +138,11 @@ def pacman_game():
                 pygame.display.flip()  
                 
         if game_active:
+            def monitor():
+                while True:
+                    #print variables here to monitor them. hold the key for the input and then escape to see the results of inputs
+                    time.sleep(5)  # Adjust the sleep time as needed
+            threading.Thread(target=monitor, daemon=True).start()
             pac_man_movement()    
             screen.blit(game_background, (0, 0))
             screen.blit(pacman,pac_man_pos)
