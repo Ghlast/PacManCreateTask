@@ -11,7 +11,7 @@ pygame.init()
 def monitor():
     while True:
        #print variables here to monitor them. hold the key for the input and then escape to see the results of inputs
-        time.sleep()  # Adjust the sleep time as needed
+        time.sleep(5)  # Adjust the sleep time as needed
 
 # Start the monitoring thread
 threading.Thread(target=monitor, daemon=True).start()
@@ -54,6 +54,8 @@ def pacman_game():
         death_screen = pygame.image
     except FileNotFoundError:
         death_screen = pygame.image.load(r"C:\Users\toasa\OneDrive\Documents\GitHub\PacManCreateTask\pacman folder\pacman_start_screen.gif")
+
+    vertical_wall= pygame.image.load(r"pacman folder\pac_man_vertical_wall.gif")
     class pellet:
         def __init__(self,image, x , y, eaten):
             normal_x = x+300 
@@ -66,10 +68,22 @@ def pacman_game():
         def eaten_state(self):
                 self.eaten = True
         pass
+    class wall:
+        def __init__(self, image, x, y):
+            normal_x = x+450 
+            normal_y = y+400
+            self.x = normal_x
+            self.y = normal_y
+            self.image = image
+            self.position = self.image.get_rect().move(self.x,self.y)
+        
+        
     try:
         test_pellet = pellet(pygame.image.load(r"H:\My Drive\10 nth grade\Computer science\git hub folder\projects and packages!\Pacman Horror\Ryan-and-Toa-Create-Task-\PacManCreateTask\pacman folder\pellet.gif"), 200, 300, False)
     except FileNotFoundError:
         test_pellet = pellet(pygame.image.load(r"C:\Users\toasa\OneDrive\Documents\GitHub\PacManCreateTask\pacman folder\Pellet.gif"), 200, -100, False)
+    test_wall_vertical = wall(pygame.image.load(r"pacman folder\pac_man_vertical_wall.gif"), -400, -200)
+    test_wall_horizontal= wall(pygame.image.load(r"pacman folder\horizontal_wall.gif"), 0,0)
 
     print(test_pellet.position)
     pac_man_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
@@ -86,9 +100,6 @@ def pacman_game():
         # game events go here
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                running = False
-            keys = pygame.key.get_pressed()
-            if keys[pygame.K_ESCAPE]:
                 running = False
             keys = pygame.key.get_pressed()
             if keys[pygame.K_ESCAPE]:
@@ -174,6 +185,8 @@ def pacman_game():
             screen.blit(game_background, (0, 0))
             screen.blit(pacman,pac_man_pos)
             screen.blit(ghost, (500, 500))
+            screen.blit(test_wall_vertical.image, (test_wall_vertical.x, test_wall_vertical.y))
+            screen.blit(test_wall_horizontal.image, (test_wall_horizontal.x, test_wall_horizontal.y))
             pac_man_rectangle = pacman.get_rect(topleft = (pac_man_pos.x, pac_man_pos.y))
             if test_pellet.position.collidepoint(pac_man_rectangle.center):
                 test_pellet.eaten_state()
