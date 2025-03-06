@@ -12,8 +12,16 @@ def monitor():
     while True:
        #print variables here to monitor them. hold the key for the input and then escape to see the results of inputs
         time.sleep(5)  # Adjust the sleep time as needed
-
 # Start the monitoring thread
+def  get_direction_of_pac_man():
+    if up == True:
+        return "up"
+    if down == True:
+        return "down"
+    if left == True:
+        return "left"
+    if right == True:
+        return "right"
 threading.Thread(target=monitor, daemon=True).start()
 def pacman_game():
     # create a window
@@ -24,8 +32,6 @@ def pacman_game():
     score = 0
     x_index = 1
     y_index = -1
-    coll_y = False
-    coll_x = False
     game_active = False
     starting = True
     try:
@@ -55,9 +61,9 @@ def pacman_game():
     except FileNotFoundError:
         death_screen = pygame.image.load(r"C:\Users\toasa\OneDrive\Documents\GitHub\PacManCreateTask\pacman folder\pacman_start_screen.gif")
 
-    vertical_wall= pygame.image.load(r"pacman folder\pac_man_vertical_wall.gif")
+    horizontal_wall= pygame.image.load(r"H:\My Drive\10 nth grade\Computer science\git hub folder\projects and packages!\Pacman Horror\Ryan-and-Toa-Create-Task-\PacManCreateTask\pacman folder\horizontal_wall.gif")
     class pellet:
-        def __init__(self,image, x , y, eaten):
+        def __init__(self,image, x , y, eaten= False):
             normal_x = x+300 
             normal_y = y+250
             self.x = normal_x
@@ -68,6 +74,16 @@ def pacman_game():
         def eaten_state(self):
                 self.eaten = True
         pass
+    pellet_list = [0,1,2,3,4]
+    for pellet_num in pellet_list:
+        pellet_list[pellet_num] = pellet(pygame.image.load(r"pacman folder\Pellet.gif"), pellet_num*100, 300)
+    pellet_rectangles = [0,1,2,3,4]
+    x = 0
+    for pellet in pellet_list:
+        pellet_rectangles[x] = pellet.position
+        x += 1
+
+        
     class wall:
         def __init__(self, image, x, y):
             normal_x = x+450 
@@ -76,16 +92,22 @@ def pacman_game():
             self.y = normal_y
             self.image = image
             self.position = self.image.get_rect().move(self.x,self.y)
+        def detect_collision(self):
+                if self.position.colliderect(pac_man_rectangle):
+                    if get_direction_of_pac_man() == "right":
+                        pac_man_pos.x -= 10
+                    if get_direction_of_pac_man() == "left":
+                        pac_man_pos.x += 10
+                    if get_direction_of_pac_man() == "up":
+                        pac_man_pos.y += 10
+                    if get_direction_of_pac_man() == "down":
+                        pac_man_pos.y -= 10
+    wall_list = [0, 1, 2, 3, 4]
+    for wall_num in range(0, 5):
+        wall_list[wall_num] = wall(pygame.image.load(r"pacman folder\horizontal_wall.gif"), 200, wall_num*100)
         
-        
-    try:
-        test_pellet = pellet(pygame.image.load(r"H:\My Drive\10 nth grade\Computer science\git hub folder\projects and packages!\Pacman Horror\Ryan-and-Toa-Create-Task-\PacManCreateTask\pacman folder\pellet.gif"), 200, 300, False)
-    except FileNotFoundError:
-        test_pellet = pellet(pygame.image.load(r"C:\Users\toasa\OneDrive\Documents\GitHub\PacManCreateTask\pacman folder\Pellet.gif"), 200, -100, False)
-    test_wall_vertical = wall(pygame.image.load(r"pacman folder\pac_man_vertical_wall.gif"), -400, -200)
-    test_wall_horizontal= wall(pygame.image.load(r"pacman folder\horizontal_wall.gif"), 0,0)
 
-    print(test_pellet.position)
+
     pac_man_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
     dt = 0
     # Load start screen
@@ -120,6 +142,10 @@ def pacman_game():
                     pygame.display.flip()
 
         def pac_man_movement():
+            global up 
+            global down 
+            global left 
+            global right 
             up = False
             down = False
             left = False
@@ -147,20 +173,22 @@ def pacman_game():
                     right = True
                     up = False
                     down = False
+                
             elif pac_man_pos.x <= 30:
-                pac_man_pos.x += 10
+                pac_man_pos.x = 941
                 pygame.display.flip()
             elif pac_man_pos.x >= 950:
-                pac_man_pos.x -= 10
+                pac_man_pos.x = 31
                 pygame.display.flip()
             elif pac_man_pos.y <= 30:
-                pac_man_pos.y += 10
+                pac_man_pos.y = 740
                 pygame.display.flip()
             elif pac_man_pos.y >= 750:
-                pac_man_pos.y -= 10
+                pac_man_pos.y = 33
                 pygame.display.flip()
             else:
                 print("error, we should not be here")
+
 
             if down == True:
                 pac_man_pos.y += 300 * dt
@@ -185,13 +213,15 @@ def pacman_game():
             screen.blit(game_background, (0, 0))
             screen.blit(pacman,pac_man_pos)
             screen.blit(ghost, (500, 500))
-            screen.blit(test_wall_vertical.image, (test_wall_vertical.x, test_wall_vertical.y))
-            screen.blit(test_wall_horizontal.image, (test_wall_horizontal.x, test_wall_horizontal.y))
             pac_man_rectangle = pacman.get_rect(topleft = (pac_man_pos.x, pac_man_pos.y))
-            if test_pellet.position.collidepoint(pac_man_rectangle.center):
-                test_pellet.eaten_state()
-            if not test_pellet.eaten:
-                screen.blit(test_pellet.image, (test_pellet.x, test_pellet.y))
+            for wall in wall_list:
+                screen.blit(wall.image, (wall.x, wall.y))
+                wall.detect_collision()
+
+            for pellet in pellet_list:
+                screen.blit(pellet.image, (pellet.x, pellet.y))
+
+
             pygame.display.flip()
 
         clock.tick(60)  # limits FPS to 60
