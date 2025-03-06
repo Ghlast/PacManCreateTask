@@ -1,6 +1,6 @@
 # Example file showing a basic pygame "game loop"
 import pygame
-import random
+import random as r
 import threading
 import time
 # pygame setup
@@ -87,6 +87,8 @@ def pacman_game():
 
     print(test_pellet.position)
     pac_man_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
+    ghost_pos = pygame.Vector2(500, 500)
+
     dt = 0
     # Load start screen
     if not game_active and starting:
@@ -118,6 +120,57 @@ def pacman_game():
                     screen.blit(game_background, (0, 0))
                     screen.blit(pacman,pac_man_pos)
                     pygame.display.flip()
+        def ghost_rand():
+            g_up = False
+            g_down = False
+            g_left = False
+            g_right = False
+            ghost_direction = r.randint(1, 4)
+            if ghost_direction == 1:
+                g_up = True
+                g_left = False
+                g_right = False
+            if ghost_direction == 2:
+                g_down = True
+                g_left = False
+                g_right = False
+            if ghost_direction == 3:
+                g_left = True
+                g_up = False
+                g_down = False
+            if ghost_direction == 4:
+                g_right = True
+                g_up = False
+                g_down = False               
+            if g_down == True:
+                ghost_pos.y += 750 * dt
+                pygame.display.flip()
+            if g_up == True:
+                ghost_pos.y -= 750 * dt
+                pygame.display.flip()
+            if g_left == True:
+                ghost_pos.x -= 750 * dt
+                pygame.display.flip()
+            if g_right == True:
+                ghost_pos.x += 750 * dt
+                pygame.display.flip()                
+
+        def ghost_movement():
+           if ghost_pos.x >= 30 and ghost_pos.x <= 950 and ghost_pos.y >= 30 and ghost_pos.y <= 750:
+                def monitor():
+                    while True:
+                        #print variables here to monitor them. hold the key for the input and then escape to see the results of inputs
+                        time.sleep(5)  # Adjust the sleep time as needed
+                threading.Thread(target=monitor, daemon=True).start()
+                keys = pygame.key.get_pressed()
+                if keys[pygame.K_w]:
+                    ghost_rand()
+                if keys[pygame.K_s]:
+                    ghost_rand()
+                if keys[pygame.K_a]:
+                    ghost_rand()
+                if keys[pygame.K_d]:
+                    ghost_rand()
 
         def pac_man_movement():
             up = False
@@ -182,9 +235,10 @@ def pacman_game():
                     time.sleep(5)  # Adjust the sleep time as needed
             threading.Thread(target=monitor, daemon=True).start()
             pac_man_movement()    
+            ghost_movement()
             screen.blit(game_background, (0, 0))
             screen.blit(pacman,pac_man_pos)
-            screen.blit(ghost, (500, 500))
+            screen.blit(ghost, ghost_pos)
             screen.blit(test_wall_vertical.image, (test_wall_vertical.x, test_wall_vertical.y))
             screen.blit(test_wall_horizontal.image, (test_wall_horizontal.x, test_wall_horizontal.y))
             pac_man_rectangle = pacman.get_rect(topleft = (pac_man_pos.x, pac_man_pos.y))
