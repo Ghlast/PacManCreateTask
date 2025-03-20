@@ -73,6 +73,9 @@ def pacman_game():
             self.position = self.image.get_rect().move(normal_x , normal_y)
         def eaten_state(self):
                 self.eaten = True
+        def detect_position(self):
+            if self.position.colliderect(pac_man_rectangle):
+                self.eaten_state()
         pass
     pellet_list = [0,1,2,3,4]
     for pellet_num in pellet_list:
@@ -198,7 +201,9 @@ def pacman_game():
             global up 
             global down 
             global left 
-            global right 
+            global right
+            global score
+            score = 0
             up = False
             down = False
             left = False
@@ -259,8 +264,13 @@ def pacman_game():
         if game_active:
             def monitor():
                 while True:
-                    #print variables here to monitor them. hold the key for the input and then escape to see the results of inputs
-                    time.sleep(5)  # Adjust the sleep time as needed
+                    #print variables here to monitor them. hold the key for the input and then escape to see the results of input
+                    x = 0           
+                    for pellet in pellet_list:
+                        x += 1
+                        print(pellet.x, pellet.y, pellet.eaten, "pellet"+ str(x))
+                    print(pac_man_pos)    
+                    time.sleep(30)  # Adjust the sleep time as needed
             threading.Thread(target=monitor, daemon=True).start()
             pac_man_movement()    
             ghost_movement()
@@ -273,12 +283,19 @@ def pacman_game():
                 screen.blit(wall.image, (wall.x, wall.y))
                 wall.detect_collision()
 
-            for pellet in pellet_list:
-                screen.blit(pellet.image, (pellet.x, pellet.y))
-
-
+            for pellet in pellet_list[:]:
+                if not pellet.eaten:
+                    screen.blit(pellet.image, (pellet.x, pellet.y))
+                if pellet.eaten:
+                        score += 1
+            if pac_man_rectangle.collidelist(pellet_rectangles) != -1:
+                if not pellet_list[pac_man_rectangle.collidelist(pellet_rectangles)].eaten:
+                    pellet_list[pac_man_rectangle.collidelist(pellet_rectangles)].eaten_state()
+            
             pygame.display.flip()
-
+            if score == 3:
+                game_active == False
+                starting == True
         clock.tick(60)  # limits FPS to 60
         dt = clock.tick(60) / 1000  # delta time in seconds (no idea what this does)
     pygame.quit()   # always quit pygame when done!
