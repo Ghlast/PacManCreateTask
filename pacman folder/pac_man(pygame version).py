@@ -22,6 +22,8 @@ def  get_direction_of_pac_man():
         return "left"
     if right == True:
         return "right"
+    
+choice_num = 0
 threading.Thread(target=monitor, daemon=True).start()
 def pacman_game():
     # create a window
@@ -145,16 +147,14 @@ def pacman_game():
                     screen.blit(game_background, (0, 0))
                     screen.blit(pacman,pac_man_pos)
                     pygame.display.flip()
+
         def ghost_rand():
             g_up = False
             g_down = False
             g_left = False
             g_right = False
-            ghost_count = 0
-            ghost_d = 1
+            ghost_speed = 300 
             ghost_direction = r.randint(1, 4)
-            if (ghost_count % 3 == 1):
-                ghost_direction = ghost_d
             if ghost_direction == 1:
                 g_up = True
                 g_left = False
@@ -171,23 +171,31 @@ def pacman_game():
                 g_right = True
                 g_up = False
                 g_down = False               
+            # Ghost_speed matches pacman's speed and is then multiplied by how many the modulus that can be found in the ghost_choice function
+            # It's multipled by the modulus to make the ghost feel fast enough
             if g_down == True:
-                ghost_pos.y += 450 * dt
+                ghost_pos.y += (ghost_speed * 3) * dt
                 pygame.display.flip()
             if g_up == True:
-                ghost_pos.y -= 450 * dt
+                ghost_pos.y -= (ghost_speed * 3) * dt
                 pygame.display.flip()
             if g_left == True:
-                ghost_pos.x -= 450 * dt
+                ghost_pos.x -= (ghost_speed * 3) * dt
                 pygame.display.flip()
             if g_right == True:
-                ghost_pos.x += 450 * dt
-                pygame.display.flip()               
-            t.sleep(0.01)
-            ghost_d = ghost_direction
-            ghost_count += 1
-            print(ghost_d, ghost_count)
-            
+                ghost_pos.x += (ghost_speed * 3) * dt
+
+                pygame.display.flip()
+
+        def ghost_choice():
+            # To make the ghost less jittery it only executes it's movement after pacman has moved x amount of times.
+            # Currently the choice_num % 3 == 0 makes it happen after pacman has moved three times. 
+            global choice_num
+            if choice_num % 3 == 0:
+                ghost_rand()
+            choice_num += 1
+            print(choice_num % 3)
+
 
         def ghost_movement():
            if ghost_pos.x >= 30 and ghost_pos.x <= 950 and ghost_pos.y >= 30 and ghost_pos.y <= 750:
@@ -198,13 +206,13 @@ def pacman_game():
                 threading.Thread(target=monitor, daemon=True).start()
                 keys = pygame.key.get_pressed()
                 if keys[pygame.K_w]:
-                    ghost_rand()
+                    ghost_choice()
                 if keys[pygame.K_s]:
-                    ghost_rand()
+                    ghost_choice()
                 if keys[pygame.K_a]:
-                    ghost_rand()
+                    ghost_choice()
                 if keys[pygame.K_d]:
-                    ghost_rand()
+                    ghost_choice()
 
         def pac_man_movement():
             global up 
@@ -274,11 +282,7 @@ def pacman_game():
             def monitor():
                 while True:
                     #print variables here to monitor them. hold the key for the input and then escape to see the results of inputs
-                    x = 0           
-                    for pellet in pellet_list:
-                        x += 1
-                        print(pellet.x, pellet.y, pellet.eaten, "pellet"+ str(x))
-                    print(pac_man_pos)    
+                     
                     t.sleep(5)  # Adjust the sleep time as needed
             threading.Thread(target=monitor, daemon=True).start()
             pac_man_movement()    
