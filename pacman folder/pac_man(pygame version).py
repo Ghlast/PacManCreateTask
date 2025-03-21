@@ -71,22 +71,14 @@ def pacman_game():
             self.eaten = eaten
             self.image = image
             self.position = self.image.get_rect().move(normal_x , normal_y)
-        def eaten_state(self):
-                self.eaten = True
-        def detect_position(self):
+        def detect_collision(self):
             if self.position.colliderect(pac_man_rectangle):
-                self.eaten_state()
+                self.eaten = True
         pass
     pellet_list = [0,1,2,3,4]
     for pellet_num in pellet_list:
         pellet_list[pellet_num] = pellet(pygame.image.load(r"pacman folder\Pellet.gif"), pellet_num*100, 300)
-    pellet_rectangles = [0,1,2,3,4]
     x = 0
-    for pellet in pellet_list:
-        pellet_rectangles[x] = pellet.position
-        x += 1
-
-        
     class wall:
         def __init__(self, image, x, y):
             normal_x = x+450 
@@ -125,6 +117,18 @@ def pacman_game():
 
     while running:
         # game events go here
+        if not game_active and starting:
+           for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                   running = False
+                keys = pygame.key.get_pressed()
+                if keys[pygame.K_ESCAPE]:
+                   running = False
+                if keys[pygame.K_SPACE]:
+                    game_active = True
+                    starting = False
+        pygame.display.flip()
+    if game_active and not starting:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -134,7 +138,6 @@ def pacman_game():
             keys = pygame.key.get_pressed()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 x, y = event.pos
-            
                 #star game buttton it also sets the game to active
                 if x > 300 and x < 480 and y > 450 and y < 500 and starting == True:
                     print("here")
@@ -205,6 +208,7 @@ def pacman_game():
                     ghost_rand()
                 if keys[pygame.K_d]:
                     ghost_rand()
+                
 
         def pac_man_movement():
             global up 
@@ -274,11 +278,7 @@ def pacman_game():
             def monitor():
                 while True:
                     #print variables here to monitor them. hold the key for the input and then escape to see the results of inputs
-                    x = 0           
-                    for pellet in pellet_list:
-                        x += 1
-                        print(pellet.x, pellet.y, pellet.eaten, "pellet"+ str(x))
-                    print(pac_man_pos)    
+                    print(score)
                     t.sleep(5)  # Adjust the sleep time as needed
             threading.Thread(target=monitor, daemon=True).start()
             pac_man_movement()    
@@ -292,19 +292,19 @@ def pacman_game():
                 screen.blit(wall.image, (wall.x, wall.y))
                 wall.detect_collision()
 
-            for pellet in pellet_list[:]:
+            # Update the score based on the number of eaten pellets
+            score = 0
+            for pellet in pellet_list:
+                pellet.detect_collision()
                 if not pellet.eaten:
                     screen.blit(pellet.image, (pellet.x, pellet.y))
                 if pellet.eaten:
-                        score += 1
-            if pac_man_rectangle.collidelist(pellet_rectangles) != -1:
-                if not pellet_list[pac_man_rectangle.collidelist(pellet_rectangles)].eaten:
-                    pellet_list[pac_man_rectangle.collidelist(pellet_rectangles)].eaten_state()
-            
+                    score += 1
+
             pygame.display.flip()
-            if score == 3:
-                game_active == False
-                starting == True
+            if score == 5:
+                game_active = False
+                starting = True
         clock.tick(60)  # limits FPS to 60
         dt = clock.tick(60) / 1000  # delta time in seconds (no idea what this does)
     pygame.quit()   # always quit pygame when done!
