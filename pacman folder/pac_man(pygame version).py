@@ -119,18 +119,6 @@ def pacman_game():
 
     while running:
         # game events go here
-        if not game_active and starting:
-           for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                   running = False
-                keys = pygame.key.get_pressed()
-                if keys[pygame.K_ESCAPE]:
-                   running = False
-                if keys[pygame.K_SPACE]:
-                    game_active = True
-                    starting = False
-        pygame.display.flip()
-    if game_active and not starting:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -285,7 +273,7 @@ def pacman_game():
             def monitor():
                 while True:
                     #print variables here to monitor them. hold the key for the input and then escape to see the results of inputs
-                     
+                    print(score)
                     t.sleep(5)  # Adjust the sleep time as needed
             threading.Thread(target=monitor, daemon=True).start()
             pac_man_movement()    
