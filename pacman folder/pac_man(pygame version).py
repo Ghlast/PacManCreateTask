@@ -138,6 +138,21 @@ def pacman_game():
                     screen.blit(game_background, (0, 0))
                     screen.blit(pacman,pac_man_pos)
                     pygame.display.flip()
+        def ghost_teleport():
+            ghost_t = r.randint(1, 4)
+            if ghost_t == 1:
+                ghost_pos.x = pac_man_pos.x + 100
+                ghost_pos.y = pac_man_pos.y
+            if ghost_t == 2:
+                ghost_pos.x = pac_man_pos.x - 100
+                ghost_pos.y = pac_man_pos.y
+            if ghost_t == 3:
+                ghost_pos.x = pac_man_pos.x
+                ghost_pos.y = pac_man_pos.y + 100
+            if ghost_t == 4:
+                ghost_pos.x = pac_man_pos.x
+                ghost_pos.y = pac_man_pos.y - 100
+
 
         def ghost_rand():
             g_up = False
@@ -145,7 +160,7 @@ def pacman_game():
             g_left = False
             g_right = False
             ghost_speed = 300 
-            ghost_direction = r.randint(1, 4)
+            ghost_direction = r.randint(1, 5)
             if ghost_direction == 1:
                 g_up = True
                 g_left = False
@@ -161,7 +176,9 @@ def pacman_game():
             if ghost_direction == 4:
                 g_right = True
                 g_up = False
-                g_down = False               
+                g_down = False 
+            if ghost_direction == 5:
+                ghost_teleport()              
             # Ghost_speed matches pacman's speed and is then multiplied by how many the modulus that can be found in the ghost_choice function
             # It's multipled by the modulus to make the ghost feel fast enough
             if g_down == True:
@@ -185,11 +202,12 @@ def pacman_game():
             if choice_num % 3 == 0:
                 ghost_rand()
             choice_num += 1
-            print(choice_num % 3)
-
+            # This if statement caps choice_num to be 300 so that it doesn't grow too big and become an issue later
+            if choice_num == 300:
+                choice_num = 0
 
         def ghost_movement():
-           if ghost_pos.x >= 30 and ghost_pos.x <= 950 and ghost_pos.y >= 30 and ghost_pos.y <= 750:
+            if ghost_pos.x >= 30 and ghost_pos.x <= 950 and ghost_pos.y >= 30 and ghost_pos.y <= 750:
                 def monitor():
                     while True:
                         #print variables here to monitor them. hold the key for the input and then escape to see the results of inputs
@@ -204,6 +222,21 @@ def pacman_game():
                     ghost_choice()
                 if keys[pygame.K_d]:
                     ghost_choice()
+            
+            elif ghost_pos.x <= 30:
+                ghost_pos.x = 941
+                pygame.display.flip()
+            elif ghost_pos.x >= 950:
+                ghost_pos.x = 31
+                pygame.display.flip()
+            elif ghost_pos.y <= 30:
+                ghost_pos.y = 740
+                pygame.display.flip()
+            elif ghost_pos.y >= 750:
+                ghost_pos.y = 33
+                pygame.display.flip()
+            else:
+                print("error, we should not be here")
 
         def pac_man_movement():
             global up 
@@ -255,25 +288,26 @@ def pacman_game():
             else:
                 print("error, we should not be here")
 
-
+            # speed_mod is just a variable that adjusts the speed of pacman. Should be kept between 0 and 1. 
+            # pacman currently moves at 80% of the base speed of 300
+            speed_mod = 0.80
             if down == True:
-                pac_man_pos.y += 300 * dt
+                pac_man_pos.y += (300*speed_mod) * dt
                 pygame.display.flip()
             if up == True:
-                pac_man_pos.y -= 300 * dt
+                pac_man_pos.y -= (300*speed_mod) * dt
                 pygame.display.flip()
             if left == True:
-                pac_man_pos.x -= 300 * dt
+                pac_man_pos.x -= (300*speed_mod) * dt
                 pygame.display.flip()
             if right == True:
-                pac_man_pos.x += 300 * dt
+                pac_man_pos.x += (300*speed_mod) * dt
                 pygame.display.flip()  
                 
         if game_active:
             def monitor():
                 while True:
                     #print variables here to monitor them. hold the key for the input and then escape to see the results of inputs
-                    print(score)
                     t.sleep(5)  # Adjust the sleep time as needed
             threading.Thread(target=monitor, daemon=True).start()
             pac_man_movement()    
