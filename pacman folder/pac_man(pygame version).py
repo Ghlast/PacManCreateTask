@@ -34,35 +34,16 @@ def pacman_game():
     score = 0
     x_index = 1
     y_index = -1
+    global game_active
+    global starting
     game_active = False
     starting = True
-    try:
-        start_screen = pygame.image.load(r"H:\My Drive\10 nth grade\Computer science\git hub folder\projects and packages!\Pacman Horror\Ryan-and-Toa-Create-Task-\PacManCreateTask\pacman folder\pacman_end_screen.gif")
-    except:
-        start_screen = pygame.image.load(r"C:\Users\toasa\OneDrive\Documents\GitHub\PacManCreateTask\pacman folder\pacman_end_screen.gif")
-    try:
-        play_button = pygame.image.load(r"H:\My Drive\10 nth grade\Computer science\git hub folder\projects and packages!\Pacman Horror\Ryan-and-Toa-Create-Task-\PacManCreateTask\pacman folder\play_game.gif")
-    except FileNotFoundError:
-        play_button = pygame.image.load(r"C:\Users\toasa\OneDrive\Documents\GitHub\PacManCreateTask\pacman folder\play_game.gif")
-    try:
-        game_background = pygame.image.load(r"H:\My Drive\10 nth grade\Computer science\git hub folder\projects and packages!\Pacman Horror\Ryan-and-Toa-Create-Task-\PacManCreateTask\pacman folder\pac_man_background.gif")
-    except FileNotFoundError:
-        game_background = pygame.image.load(r"C:\Users\toasa\OneDrive\Documents\GitHub\PacManCreateTask\pacman folder\pac_man_background.gif")
-    try:
-        pacman = pygame.image.load(r"H:\My Drive\10 nth grade\Computer science\git hub folder\projects and packages!\Pacman Horror\Ryan-and-Toa-Create-Task-\PacManCreateTask\pacman folder\pac_man.gif")
-    except FileNotFoundError:
-        pacman = pygame.image.load(r"C:\Users\toasa\OneDrive\Documents\GitHub\PacManCreateTask\pacman folder\pac_man.gif")
-    try:
-        ghost = pygame.image.load(r"H:\My Drive\10 nth grade\Computer science\git hub folder\projects and packages!\Pacman Horror\Ryan-and-Toa-Create-Task-\PacManCreateTask\pacman folder\pacman ghost.gif")
-    except FileNotFoundError:
-        ghost = pygame.image.load(r"C:\Users\toasa\OneDrive\Documents\GitHub\PacManCreateTask\pacman folder\pacman ghost.gif")
-    try:
-        death_screen = pygame.image.load(r"H:\My Drive\10 nth grade\Computer science\git hub folder\projects and packages!\Pacman Horror\Ryan-and-Toa-Create-Task-\PacManCreateTask\pacman folder\pacman_start_screen.gif")
-    except FileNotFoundError:
-        death_screen = pygame.image
-    except FileNotFoundError:
-        death_screen = pygame.image.load(r"C:\Users\toasa\OneDrive\Documents\GitHub\PacManCreateTask\pacman folder\pacman_start_screen.gif")
-
+    start_screen = pygame.image.load(r"pacman folder\pacman_end_screen.gif")
+    play_button = pygame.image.load(r"pacman folder\play_game.gif")
+    game_background = pygame.image.load(r"pacman folder\pac_man_background.gif")
+    pacman = pygame.image.load(r"pacman folder\pac_man.gif")
+    ghost = pygame.image.load(r"pacman folder\pacman ghost.gif")
+    death_screen = pygame.image.load(r"pacman folder\pacman_start_screen.gif")
     horizontal_wall= pygame.image.load(r"pacman folder\horizontal_wall.gif")
     class pellet:
         def __init__(self,image, x , y, eaten= False):
@@ -76,6 +57,8 @@ def pacman_game():
         def detect_collision(self):
             if self.position.colliderect(pac_man_rectangle):
                 self.eaten = True
+        def reset(self):
+            self.eaten = False
         pass
     pellet_list = [0,1,2,3,4]
     for pellet_num in pellet_list:
@@ -110,34 +93,40 @@ def pacman_game():
 
     dt = 0
     # Load start screen
-    if not game_active and starting:
-        print("start screen")
-        screen.blit(start_screen, (0, 0))
-        screen.blit(play_button, (300, 450))
-    pygame.display.flip()
+
    
 
     while running:
+        if starting:
+            score = 0
+        if not game_active and starting:
+            screen = pygame.display.set_mode((747,1000))
+            screen.blit(start_screen, (0, 0))
+            screen.blit(play_button, (300, 450))
+            pygame.display.flip()
+            for event in pygame.event.get():
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    x, y = event.pos
+                    if x > 300 and x < 480 and y > 450 and y < 500 and starting == True:
+                        print("here")
+                        game_active = True
+                        starting = False
+                        score = 0
+                        print("game frame")
+                        pac_man_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
+                        ghost_pos = pygame.Vector2(500, 500)
+                        screen = pygame.display.set_mode((1000,1000))
+                        screen.blit(game_background, (0, 0))
+                        screen.blit(pacman,pac_man_pos)
+                        pygame.display.flip()
         # game events go here
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                running = False
+                running = False 
             keys = pygame.key.get_pressed()
             if keys[pygame.K_ESCAPE]:
                 running = False
             keys = pygame.key.get_pressed()
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                x, y = event.pos
-                #star game buttton it also sets the game to active
-                if x > 300 and x < 480 and y > 450 and y < 500 and starting == True:
-                    print("here")
-                    game_active = True
-                    starting = False
-                    print("game frame")
-                    screen = pygame.display.set_mode((1000,1000))
-                    screen.blit(game_background, (0, 0))
-                    screen.blit(pacman,pac_man_pos)
-                    pygame.display.flip()
         def ghost_teleport():
             ghost_t = r.randint(1, 4)
             if ghost_t == 1:
@@ -152,7 +141,6 @@ def pacman_game():
             if ghost_t == 4:
                 ghost_pos.x = pac_man_pos.x
                 ghost_pos.y = pac_man_pos.y - 100
-
 
         def ghost_rand():
             g_up = False
@@ -194,8 +182,21 @@ def pacman_game():
                 ghost_pos.x += (ghost_speed * 3) * dt
 
                 pygame.display.flip()
-
-        def ghost_choice():
+        def reset_game():
+            
+            screen = pygame.display.set_mode((1000,624))
+            pac_man_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
+            ghost_pos = pygame.Vector2(500, 500)
+            screen.blit(death_screen, (0, 0))
+            pygame.display.flip()
+            for events in pygame.event.get():
+                keys = pygame.key.get_pressed()
+                if keys[pygame.K_SPACE]:
+                    starting = True
+                    score = 0
+                    game_active = False
+                    print("game frame")
+        def ghost_choice(): 
             # To make the ghost less jittery it only executes it's movement after pacman has moved x amount of times.
             # Currently the choice_num % 3 == 0 makes it happen after pacman has moved three times. 
             global choice_num
@@ -332,8 +333,22 @@ def pacman_game():
 
             pygame.display.flip()
             if score == 5:
-                game_active = False
-                starting = True
+                screen = pygame.display.set_mode((1000,624))
+                screen.blit(death_screen, (0, 0))
+                pygame.display.flip()
+                for events in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        running = False
+                    keys = pygame.key.get_pressed()
+                    if keys[pygame.K_ESCAPE]:
+                        running = False
+                    if keys[pygame.K_SPACE]:
+                        for pellet in pellet_list:
+                            pellet.reset()
+                        starting = True
+                        game_active = False 
+
+            pygame.display.flip()
         clock.tick(60)  # limits FPS to 60
         dt = clock.tick(60) / 1000  # delta time in seconds (no idea what this does)
     pygame.quit()   # always quit pygame when done!
