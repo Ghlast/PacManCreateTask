@@ -25,10 +25,6 @@ def  get_direction_of_pac_man():
     
 choice_num = 0
 threading.Thread(target=monitor, daemon=True).start()
-outer_left_wall_y = -430
-outer_right_wall_y = 470
-outer_top_wall_x = -430
-outer_bottom_wall_x = 300
 def pacman_game():
     # create a window
     screen = pygame.display.set_mode((747,790))
@@ -70,8 +66,8 @@ def pacman_game():
         pellet_list[pellet_num] = pellet(pygame.image.load(r"pacman folder\Pellet.gif"), pellet_num*100, 300)
     x = 0
     class wall:
-        def __init__(self, image, x, y):
-            normal_x = x+450 
+        def __init__(self,image,x, y):
+            normal_x = x+450  
             normal_y = y+400
             self.x = normal_x
             self.y = normal_y
@@ -88,7 +84,10 @@ def pacman_game():
                     if get_direction_of_pac_man() == "down":
                         pac_man_pos.y -= 10
     wall_list = [0,1,2,3, 4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49]
-
+    outer_left_wall_y = -430
+    outer_right_wall_y = 470
+    outer_top_wall_x = -400
+    outer_bottom_wall_x = 400
     y = 0
     for wall_num in range(49):
         if y >= 2:
@@ -101,9 +100,10 @@ def pacman_game():
             wall_list[wall_num] = wall(vertical_wall, y*40-50, outer_top_wall_x)
         if 6<= wall_num <8:
             wall_list[wall_num] = wall(vertical_wall, y*40-50, outer_bottom_wall_x)
-        if 8<= wall_num <10:
-            wall_list[wall_num] = wall(horizontal_wall, y*40-50, outer_top_wall_x)
         y += 1
+
+
+        
 
 
     pac_man_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
@@ -115,29 +115,7 @@ def pacman_game():
    
 
     while running:
-        if starting:
-            score = 0
-        if not game_active and starting:
-            screen = pygame.display.set_mode((747,1000))
-            screen.blit(start_screen, (0, 0))
-            screen.blit(play_button, (300, 450))
-            pygame.display.flip()
-            for event in pygame.event.get():
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    x, y = event.pos
-                    if x > 300 and x < 480 and y > 450 and y < 500 and starting == True:
-                        print("here")
-                        game_active = True
-                        starting = False
-                        score = 0
-                        print("game frame")
-                        pac_man_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
-                        ghost_pos = pygame.Vector2(500, 500)
-                        screen = pygame.display.set_mode((1000,1000))
-                        screen.blit(game_background, (0, 0))
-                        screen.blit(pacman,pac_man_pos)
-                        pygame.display.flip()
-        # game events go here
+        game_active = True
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False 
@@ -200,6 +178,20 @@ def pacman_game():
                 ghost_pos.x += (ghost_speed * 3) * dt
 
                 pygame.display.flip()
+        def reset_game():
+            
+            screen = pygame.display.set_mode((1000,624))
+            pac_man_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
+            ghost_pos = pygame.Vector2(500, 500)
+            screen.blit(death_screen, (0, 0))
+            pygame.display.flip()
+            for events in pygame.event.get():
+                keys = pygame.key.get_pressed()
+                if keys[pygame.K_SPACE]:
+                    starting = True
+                    score = 0
+                    game_active = False
+                    print("game frame")
         def ghost_choice(): 
             # To make the ghost less jittery it only executes it's movement after pacman has moved x amount of times.
             # Currently the choice_num % 3 == 0 makes it happen after pacman has moved three times. 
@@ -210,7 +202,6 @@ def pacman_game():
             # This if statement caps choice_num to be 300 so that it doesn't grow too big and become an issue later
             if choice_num == 300:
                 choice_num = 0
-
         def ghost_movement():
             if ghost_pos.x >= 30 and ghost_pos.x <= 950 and ghost_pos.y >= 30 and ghost_pos.y <= 750:
                 def monitor():
@@ -242,7 +233,6 @@ def pacman_game():
                 pygame.display.flip()
             else:
                 print("error, we should not be here")
-
         def pac_man_movement():
             global up 
             global down 
@@ -313,15 +303,14 @@ def pacman_game():
             def monitor():
                 while True:
                     #print variables here to monitor them. hold the key for the input and then escape to see the results of inputs
-                    print(wall_list[2].x, wall_list[2].y)
                     t.sleep(5)  # Adjust the sleep time as needed
             threading.Thread(target=monitor, daemon=True).start()
             pac_man_movement()    
             ghost_movement()
+            screen = pygame.display.set_mode((1000,1000))
             screen.blit(game_background, (0, 0))
             screen.blit(pacman,pac_man_pos)
             screen.blit(ghost, ghost_pos)
-
             pac_man_rectangle = pacman.get_rect(topleft = (pac_man_pos.x, pac_man_pos.y))
             for wall in wall_list:
                 try:
@@ -338,24 +327,6 @@ def pacman_game():
                     screen.blit(pellet.image, (pellet.x, pellet.y))
                 if pellet.eaten:
                     score += 1
-
-            pygame.display.flip()
-            if score == 5:
-                screen = pygame.display.set_mode((1000,624))
-                screen.blit(death_screen, (0, 0))
-                pygame.display.flip()
-                for events in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        running = False
-                    keys = pygame.key.get_pressed()
-                    if keys[pygame.K_ESCAPE]:
-                        running = False
-                    if keys[pygame.K_SPACE]:
-                        for pellet in pellet_list:
-                            pellet.reset()
-                        starting = True
-                        game_active = False 
-
             pygame.display.flip()
         clock.tick(60)  # limits FPS to 60
         dt = clock.tick(60) / 1000  # delta time in seconds (no idea what this does)
